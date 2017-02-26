@@ -1,0 +1,72 @@
+<div class="container-fluid bg-3 text-center">
+    <div class="row" ng-if="view_type == 'videos'">
+        <div ng-if="Message" class="alert alert-danger" style="padding: 20px; text-align: center;">{{Message}}</div>
+
+        <div class="frame" id="cycleitems">
+            <ul class="clearfix">
+                <li ng-repeat="video in videos track by $index" ng-if="video" sly-horizontal-repeat>
+                    {{activateListener($index, video.id, video.title,video.images[0].url,video.contents[0].url)}}
+                    <video id="video_{{$index}}" class="video-js vjs-default-skin" controls preload="none"
+                           width="300" height="400"
+                           poster="{{video.images[0].url}}" data-setup="{}">
+                        <source  src="{{generateSrc(video.contents[0].url)}}" type='video/mp4' />
+                    </video>
+                    <div>{{video.title}}</div>
+                </li>
+
+            </ul>
+        </div>
+        <div class="scrollbar">
+            <div class="handle">
+                <div class="mousearea"></div>
+            </div>
+        </div>
+
+
+        <div class="controls center">
+            <button class="btn prev"><i class="icon-chevron-left"></i> prev</button>
+            <div class="btn-group">
+                <button class="btn pause"><i class="icon-pause"></i> pause</button>
+                <button class="btn resume"><i class="icon-play"></i> resume</button>
+                <button class="btn toggle"><i class="icon-pause"></i> toggle</button>
+            </div>
+            <button class="btn next">next <i class="icon-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+
+    <div class="row" ng-if="view_type == 'history'">
+        <h3>Watched Videos</h3>
+        <div style="padding: 20px; text-align: center;" id="history_loader"><img src="css/ajax-loader.gif" /><br />Loading history... </div>
+        <div ng-if="history_message" class="alert alert-danger" style="padding: 20px; text-align: center;">{{history_message}}.</div>
+        <div class="frame" id="cycleitems">
+            <ul class="clearfix">
+                <li ng-repeat="history in histories track by $index" sly-horizontal-repeat>
+                    <video id="history_{{$index}}" class="video-js vjs-default-skin" controls preload="none"
+                           width="300" height="400"
+                           poster="{{history.poster_url}}" data-setup="{}">
+                        <source  src="{{generateSrc(history.video_url)}}" type='video/mp4' />
+                    </video>
+                    <div>{{history.title}}</div>
+                </li>
+
+            </ul>
+        </div>
+        <div class="scrollbar">
+            <div class="handle">
+                <div class="mousearea"></div>
+            </div>
+        </div>
+
+    </div>
+
+
+</div><br>
+
+
+
+
+
+
+
