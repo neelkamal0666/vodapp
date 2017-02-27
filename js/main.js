@@ -1,20 +1,20 @@
 var app = angular.module('VODApp', [
-  'ngRoute','angular-sly'
+    'ngRoute','angular-sly','starter.services'
 ]);
 /**
  * Configure the Routes
  */
 app.config(['$routeProvider','$locationProvider', function ($routeProvider,$locationProvider) {
-  $routeProvider
-      .when("/", {templateUrl: "partials/home.html", controller: "IndexCtrl"})
-      .otherwise("/404", {templateUrl: "partials/404.html", controller: "IndexCtrl"});
-      //$locationProvider.html5Mode(true);
+    $routeProvider
+        .when("/", {templateUrl: "partials/home.html", controller: "IndexCtrl"})
+        .otherwise("/404", {templateUrl: "partials/404.html", controller: "IndexCtrl"});
+    //$locationProvider.html5Mode(true);
 }]);
 
 /**
  * Controls  Pages
  */
-app.controller('IndexCtrl', function ( $scope, $location, $http,$sce,$timeout) {
+app.controller('IndexCtrl', function ( $scope, $location, $http,$sce,$timeout, RestService) {
     $scope.setUserId = function(){
         if(window.localStorage.getItem("userId")){
             $scope.userId = window.localStorage.getItem("userId");
@@ -27,20 +27,17 @@ app.controller('IndexCtrl', function ( $scope, $location, $http,$sce,$timeout) {
     $scope.getVideos = function() {
         $scope.view_type = "videos";
         $scope.histories =[];
-        console.log(api_url);
-        $http.get(api_url).
-            success(function (data, status, headers, config) {
-                if(data.entries) {
-                    console.log(data);
-                    $scope.videos = data.entries;
-                }
-                document.getElementById('data_loader').innerHTML = '';
-                $scope.Message = "";
-            }).
-            error(function (data, status, headers, config) {
-                $scope.Message = "Failed to load videos. Please try again.";
-                document.getElementById('data_loader').innerHTML = '';
-            });
+        RestService.getData(api_url).success(function (data) {
+            if(data.entries) {
+                console.log(data);
+                $scope.videos = data.entries;
+            }
+            document.getElementById('data_loader').innerHTML = '';
+            $scope.Message = "";
+        }).error(function (data) {
+            $scope.Message = "Failed to load videos. Please try again.";
+            document.getElementById('data_loader').innerHTML = '';
+        });
     }
 
     angular.element(document).ready(function () {
@@ -58,31 +55,21 @@ app.controller('IndexCtrl', function ( $scope, $location, $http,$sce,$timeout) {
         }
     };
 
-    $scope.getVideoLink = function(content){
-        console.log(content[0].url);
-        return $sce.trustAsResourceUrl(content[0].url);
-    }
-
     $scope.getHistory = function(){
         $scope.videos =[];
-        console.log("history");
-        console.log($scope.userId);
-        console.log(history_api_url + '/'+ $scope.userId);
         $scope.view_type = "history";
-        $http.get(history_api_url + '/'+ $scope.userId).
-            success(function (data, status, headers, config) {
-                var arr = Object.keys(data).map(function (key) { return data[key]; });
-                console.log(arr);
-                $scope.histories = arr;
-                if(arr.length ==0){
-                    $scope.Message = "No history found.";
-                }
-                document.getElementById('history_loader').innerHTML = '';
-            }).
-            error(function (data, status, headers, config) {
-                $scope.Message = "Failed to history. Please try again.";
-                document.getElementById('history_loader').innerHTML = '';
-            });
+        RestService.getData(history_api_url + '/'+ $scope.userId).success(function (data) {
+            var arr = Object.keys(data).map(function (key) { return data[key]; });
+            console.log(arr);
+            $scope.histories = arr;
+            if(arr.length ==0){
+                $scope.history_message = "No history found.";
+            }
+            document.getElementById('history_loader').innerHTML = '';
+        }).error(function (data) {
+            $scope.history_message = "Failed to history. Please try again.";
+            document.getElementById('history_loader').innerHTML = '';
+        });
     }
 
 
@@ -93,18 +80,17 @@ app.controller('IndexCtrl', function ( $scope, $location, $http,$sce,$timeout) {
         data_string.video_url = video_url;
         data_string.userId = $scope.userId;
         data_string.id = id;
-        console.log("save history");
-
-        $http.post(history_api_url, JSON.stringify(data_string)).
-            success(function(data, status, headers, config) {
-                console.log(data);
-            }).
-            error(function(data, status, headers, config) {
-
-            });
+        RestService.postData(history_api_url,data_string).success(function (data) {
+            console.log(data);
+        }).error(function (data) {
+            console.log(data);
+        });
     }
 
     $scope.activateListener = function(index,id, title, image_url, video_url){
+        if(!document.getElementById("title_"+index)){
+            return 0;
+        }
         var player1 = videojs('#video_'+index).ready(function() {
             this.hotkeys({
                 volumeStep: 0.1,
@@ -115,60 +101,30 @@ app.controller('IndexCtrl', function ( $scope, $location, $http,$sce,$timeout) {
         var options = {};
 
         var player = videojs('#video_'+index, options, function onPlayerReady() {
-           // videojs.log('Your player is ready!');
+            // videojs.log('Your player is ready!');
 
             // In this context, `this` is the player that was created by Video.js.
-           // this.play();
+            // this.play();
 
             // How about an event listener?
             this.on('firstplay', function(){
                 //alert('firstplay');
                 console.log("first play");
-               $scope.saveHistory(id, title, image_url, video_url);
+                $scope.saveHistory(id, title, image_url, video_url);
             });
             this.on('ended', function() {
                 videojs.log('Awww...over so soon?!');
             });
         });
     }
-    $scope.capture = function(){
-        console.log("viewed");
-    }
+
 
     $scope.keyPressed = function (keyEvent) {
         console.log(keyEvent.keyCode);
         if (keyEvent.keyCode == 13) {
-            alert('presiono enter');
             console.log('presiono enter');
+            document.getElementsByClassName('active');
         }
     };
-
-
-
-   /* $timeout(function(){
-        var id =1;
-        videojs('#video_'+id).ready(function() {
-            this.hotkeys({
-                volumeStep: 0.1,
-                seekStep: 5,
-                enableModifiersForNumbers: false
-            });
-        });
-    }, 5000); */
-
-    /*var player = videojs('myvideos', options, function onPlayerReady() {
-        videojs.log('Your player is ready!');
-
-        // In this context, `this` is the player that was created by Video.js.
-        this.play();
-
-        // How about an event listener?
-        this.on('ended', function() {
-            videojs.log('Awww...over so soon?!');
-        });
-    }); */
-
-
-
 
 })

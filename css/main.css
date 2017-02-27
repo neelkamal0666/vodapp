@@ -121,3 +121,7 @@ body { background: #e8e8e8; }
     -ms-transform: rotateY(-60deg) scale(0.9);
     transform: rotateY(-60deg) scale(0.9);
 }
+
+.video-js.vjs-playing .vjs-tech {
+    pointer-events: none;
+}

@@ -11,7 +11,7 @@
                            poster="{{video.images[0].url}}" data-setup="{}">
                         <source  src="{{generateSrc(video.contents[0].url)}}" type='video/mp4' />
                     </video>
-                    <div>{{video.title}}</div>
+                    <div id="title_{{$index}}">{{video.title}}</div>
                 </li>
 
             </ul>
@@ -25,11 +25,7 @@
 
         <div class="controls center">
             <button class="btn prev"><i class="icon-chevron-left"></i> prev</button>
-            <div class="btn-group">
-                <button class="btn pause"><i class="icon-pause"></i> pause</button>
-                <button class="btn resume"><i class="icon-play"></i> resume</button>
-                <button class="btn toggle"><i class="icon-pause"></i> toggle</button>
-            </div>
+
             <button class="btn next">next <i class="icon-chevron-right"></i>
             </button>
         </div>
