@@ -21,9 +21,15 @@ You can view the video in full screen. The app will also show the history of wat
 Keyboard shortcuts :
 
 playPauseKey : Space key
+
 rewindKey : Left arrow
+
 forwardKey: Right arrow
+
 volumeUpKey : Up arrow
+
 volumeDownKey : Down arrow
+
 muteKey : M
+
 fullscreenKey : F
