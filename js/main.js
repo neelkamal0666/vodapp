@@ -8,13 +8,14 @@ app.config(['$routeProvider','$locationProvider', function ($routeProvider,$loca
     $routeProvider
         .when("/", {templateUrl: "partials/home.html", controller: "IndexCtrl"})
         .otherwise("/404", {templateUrl: "partials/404.html", controller: "IndexCtrl"});
-    //$locationProvider.html5Mode(true);
+    $locationProvider.html5Mode(true);
 }]);
 
 /**
  * Controls  Pages
  */
 app.controller('IndexCtrl', function ( $scope, $location, $http,$sce,$timeout, RestService) {
+
     $scope.setUserId = function(){
         if(window.localStorage.getItem("userId")){
             $scope.userId = window.localStorage.getItem("userId");
