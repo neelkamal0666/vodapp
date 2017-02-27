@@ -2,12 +2,16 @@
 Video on demand app in angular.js
 
 js/main.js : controller
+
 js/services.js : for ajax calls
+
 partials/ : contains templates
+
 lib/ : contains libraries
 
 
 Library used for horizontal carousel : sly.js
+
 Library used for Video Player : video.js
 
 Other dependencies : bootstrap, jquery
